@@ -8,13 +8,13 @@ const employee_schema = new schema({
         type: String
     },
     Mobile:{
-        type: String
+        type: Number
     },
     Address:{
         type: String
     },
     Salary:{
-        type: String
+        type: Number
     },
     Department:{
         type: String
@@ -23,10 +23,10 @@ const employee_schema = new schema({
         type: String
     },
     JoiningDate:{
-        type: String
+        type: Date
     },
     BirthDate:{
-        type: String
+        type: Date
     },
     Pincode:{
         type:Number

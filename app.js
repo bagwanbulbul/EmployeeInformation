@@ -56,6 +56,41 @@ app.get("/getData",(req,res)=>{
         console.log(err)
     })
 })
+app.get("/sortedBySalary",(req,res)=>{
+    Employee.find().sort({Salary: 1}).then((data)=>{
+        console.log(data)
+        res.send(data)
+    }).catch((err)=>{
+        console.log(err)
+    })
+})
+app.get("/sortedByName",(req,res)=>{
+    Employee.find({ "name": { "$exists": true } }).sort({name: 1})
+    .then((data)=>{
+        console.log(data)
+        res.send(data)
+    }).catch((err)=>{
+        console.log(err)
+    })
+})
+app.get("/sortedByJoiningDate",(req,res)=>{
+    Employee.find().sort({JoiningDate: -1})
+    .then((data)=>{
+        console.log(data)
+        res.send(data)
+    }).catch((err)=>{
+        console.log(err)
+    })
+})
+app.get("/sortedByBirthDate",(req,res)=>{
+    Employee.find().sort({JoiningDate: -1})
+    .then((data)=>{
+        console.log(data)
+        res.send(data)
+    }).catch((err)=>{
+        console.log(err)
+    })
+})
 app.post("/updateData",(req,res)=>{
     const {
         name,
@@ -69,7 +104,6 @@ app.post("/updateData",(req,res)=>{
         Pincode,
         user_id
     }=req.body;
-    console.log({_id:user_id})
     Employee.updateOne({_id:user_id},
     {$set:{
         name:name,Mobile:Mobile,
