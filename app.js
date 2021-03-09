@@ -71,7 +71,15 @@ app.post("/updateData",(req,res)=>{
     }=req.body;
     console.log({_id:user_id})
     Employee.updateOne({_id:user_id},
-    {$set:{name:name,Mobile:Mobile, Address: Address, Salary:Salary, Department:Department, JobTitle:JobTitle,JoiningDate:JoiningDate, BirthDate:BirthDate,Pincode:Pincode}})
+    {$set:{
+        name:name,Mobile:Mobile,
+        Address: Address, 
+        Salary:Salary, 
+        Department:Department, 
+        JobTitle:JobTitle,
+        JoiningDate:JoiningDate,
+        BirthDate:BirthDate,
+        Pincode:Pincode}})
     .then(result =>{
         res.send({data:"Record has been Updated..!!"});  
         //res.json({statusCode:"200",statusMsj:"Successfuly Update", data:result})
@@ -82,13 +90,13 @@ app.post("/updateData",(req,res)=>{
 
 app.post("/deleteData",function(req,res){   
     Employee.remove({ _id: req.body.user_id }, function(err) {  
-               if(err){  
-                   res.send(err);  
-               }  
-               else{    
-                      res.send({data:"Record has been Deleted..!!"});             
-                  }  
-           });  
+            if(err){  
+                res.send(err);  
+            }  
+            else{    
+                    res.send({data:"Record has been Deleted..!!"});             
+                }  
+        });  
    })  
 
 app.listen(PORT, () => {
