@@ -175,15 +175,17 @@ app.get("/neededBuses",function(req,res){
     Employee.find().then(data=>{
         var count = 1
         var j = 1
-        for(var i=0;  i<=data.length; i++){
-            const d1 = data[i].Pincode
+        data.forEach(item=>{
+            console.log(data[j].Pincode)
+            const d1 = item.Pincode
             const d2 = data[j].Pincode
             if(d1 != d2){
                 count = count+1
             }
             j++
-            res.json({Buss:count})
-        }
+            res.json({totalBus: count})
+
+        })
     }).catch(err=>{
         console.log(err)
         res.send("SOMETHING WENT WRONG")
