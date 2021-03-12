@@ -6,15 +6,33 @@ const app = express();
 const Employee = require("./models/employee_schema")
 app.use(bodyParser())
 
+// var MongoClient = require("mongodb").MongoClient;
+// const autoIncrement = require('mongodb-autoincrement')
+// MongoClient.connect(url, function (err, db) {
+//     autoIncrement.getNextSequence(db, collectionName, function (err, autoIndex) {
+//         var collection = db.collection(collectionName);
+//         collection.insert({
+//             EmployeeId: autoIndex
+//     });
+// });
+
 mongoose.set('useFindAndModify', false);
-mongoose
-    .connect('mongodb://localhost:27017/EmployeeDb', {
-        useUnifiedTopology: true,
+mongoose.connect('mongodb://localhost:27017/EmployeeDb', {
+        useUnifiedTopology: false,
         useNewUrlParser: true
     })
     .then(() => {
         console.log('Connected to the Database successfully');
     });
+
+    function getSequenceNextValue(seqName) {
+        var seqDoc = Employee.findByIdAndUpdate({
+          query: { EmployeeId: seqName },
+          update: { $inc: { seqValue: 1 } },
+          new: true
+        });     
+        return seqDoc.seqValue;
+      }
 
 app.post("/AddData",(req,res)=>{
     const {
@@ -28,10 +46,11 @@ app.post("/AddData",(req,res)=>{
         BirthDate,
         Pincode
     }=req.body;
-    var randomID = (Math.random()+1).toString(36).substring(2)
+    // var randomID = Math.floor((Math.random() * 100) + 1);
     const newUser = new Employee({
         name: name,
-        EmployeeId: randomID,
+        //EmployeeId: getSequenceNextValue("EmployeeId"),
+        EmployeeId: getSequenceNextValue("EmployeeId"),
         Mobile:Mobile,
         Address: Address, 
         Salary: Salary,
@@ -44,6 +63,7 @@ app.post("/AddData",(req,res)=>{
     let response = new Employee(newUser)
     response.save()
     .then((result)=>{
+        // console.log(result)
         res.send(result)
     }).catch((err)=>{
         res.send(err)
@@ -174,18 +194,24 @@ app.get("/salaryByRange",function(req,res){
 app.get("/neededBuses",function(req,res){
     Employee.find().then(data=>{
         var count = 1
-        var j = 1
-        data.forEach(item=>{
-            console.log(data[j].Pincode)
-            const d1 = item.Pincode
-            const d2 = data[j].Pincode
-            if(d1 != d2){
-                count = count+1
+        for(var i=1; i<=data.length-1; i++){
+            if(data[i].key!= data[i-1].key){
+              count = count+1
             }
-            j++
             res.json({totalBus: count})
+        }
+        // data.forEach(item=>{
+        //     console.log(data[j].Pincode)
+        //     const d1 = item.Pincode
+        //     const d2 = data[j].Pincode
+        //     if(d1 != d2){
+        //         count = count+1
+        //     }
+        //     j++
+        //     res.json({totalBus: count})
 
-        })
+        // })
+        
     }).catch(err=>{
         console.log(err)
         res.send("SOMETHING WENT WRONG")
@@ -204,6 +230,38 @@ app.get("/TotalEmployiesSalary",function(req,res){
     }).catch(err=>{
         console.log(err)
         res.send(err)
+    })
+})
+
+app.get("/googleSearch",function(req,res){
+    var searchName = req.body.searchName
+    var searchNameList = []
+    Employee.find().then(data=>{
+            data.forEach(item=>{
+                if(searchName[0] == item.name[0]){
+                    console.log(item)
+                    searchNameList.push(item)
+                }
+            })
+            res.send(searchNameList)   
+    }).catch(err=>{
+        console.log(err)
+        res.send(err)
+    })
+});
+
+app.get("/replacecity",function(req,res){
+    const Address = req.body.Address
+    const replaceCityName = req.body.replaceCityName
+    Employee.find({'Address': {$regex:Address, $options:'i'}})
+    .then((data)=>{
+       data.forEach(item=>{
+           console.log(item)
+           if(item.Address === Address){
+               item.Address=replaceCityName
+               console.log(item)
+           }
+       })
     })
 })
 app.listen(PORT, () => {
