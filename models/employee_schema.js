@@ -1,7 +1,6 @@
 const mongoose = require("mongoose")
 //const autoIncrement = require("mongodb-autoincrement");
 //var MongoClient = require("mongodb").MongoClient;
-// mongoose.plugin(autoIncrement.mongoosePlugin);
 
 const schema = mongoose.Schema
 const employee_schema = new schema({
@@ -36,6 +35,9 @@ const employee_schema = new schema({
         type:Number
     }
 }, { strict: false });
+module.exports = mongoose.model('Employee', employee_schema)
+
+
 // var detail = mongoose.model("Employee", employee_schema)
 // module.exports = detail
 // autoIncrement.getNextSequence(db, collection, function(err,autoIndex){
@@ -44,7 +46,6 @@ const employee_schema = new schema({
 //         EmployeeId: autoIndex,
 // });
 // })
-module.exports = mongoose.model('Employee', employee_schema)
 
 
 // MongoClient.connect(url, function (err, db) {

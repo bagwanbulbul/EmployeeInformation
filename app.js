@@ -253,6 +253,7 @@ app.get("/googleSearch",function(req,res){
 app.get("/replacecity",function(req,res){
     const Address = req.body.Address
     const replaceCityName = req.body.replaceCityName
+    var changeCityName = []
     Employee.find({'Address': {$regex:Address, $options:'i'}})
     .then((data)=>{
        data.forEach(item=>{
@@ -260,8 +261,13 @@ app.get("/replacecity",function(req,res){
            if(item.Address === Address){
                item.Address=replaceCityName
                console.log(item)
+                changeCityName.push(item)
            }
        })
+       res.send(changeCityName)
+    }).catch(err=>{
+        console.log(err)
+        res.send(err)
     })
 })
 app.listen(PORT, () => {
